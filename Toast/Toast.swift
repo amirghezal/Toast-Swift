@@ -771,7 +771,6 @@ public enum ToastPosition {
         }
     }
 }
-//superview.safeAreaLayoutGuide.layoutFrame.size.height
 // MARK: - Private UIView Extensions
 
 private extension UIView {
@@ -785,4 +784,3 @@ private extension UIView {
     }
     
 }
-
