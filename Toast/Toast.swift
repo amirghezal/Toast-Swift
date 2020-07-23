@@ -28,7 +28,7 @@ import ObjectiveC
 
 /**
  Toast is a Swift extension that adds toast notifications to the `UIView` object class.
- It is intended to be simple, lightweight, and easy to use. Most toast notifications 
+ It is intended to be simple, lightweight, and easy to use. Most toast notifications
  can be triggered with a single line of code.
  
  The `makeToast` methods create a new view and then display it as toast.
@@ -475,10 +475,10 @@ public extension UIView {
             messageLabel?.textColor = style.messageColor
             messageLabel?.backgroundColor = UIColor.clear
             
-            let maxMessageSize = CGSize(width: (self.bounds.size.width * style.maxWidthPercentage) - imageRect.size.width, height: self.bounds.size.height * style.maxHeightPercentage)
+            let maxMessageSize = CGSize(width: self.bounds.size.width - 32, height: self.bounds.size.height * style.maxHeightPercentage)
             let messageSize = messageLabel?.sizeThatFits(maxMessageSize)
             if let messageSize = messageSize {
-                let actualWidth = min(messageSize.width, maxMessageSize.width)
+                let actualWidth = max(messageSize.width, maxMessageSize.width)
                 let actualHeight = min(messageSize.height, maxMessageSize.height)
                 messageLabel?.frame = CGRect(x: 0.0, y: 0.0, width: actualWidth, height: actualHeight)
             }
@@ -755,18 +755,23 @@ public enum ToastPosition {
     fileprivate func centerPoint(forToast toast: UIView, inSuperview superview: UIView) -> CGPoint {
         let topPadding: CGFloat = ToastManager.shared.style.verticalPadding + superview.csSafeAreaInsets.top
         let bottomPadding: CGFloat = ToastManager.shared.style.verticalPadding + superview.csSafeAreaInsets.bottom
-        
+        let view = UIApplication.shared.keyWindow?.rootViewController?.view!
         switch self {
         case .top:
             return CGPoint(x: superview.bounds.size.width / 2.0, y: (toast.frame.size.height / 2.0) + topPadding)
         case .center:
             return CGPoint(x: superview.bounds.size.width / 2.0, y: superview.bounds.size.height / 2.0)
         case .bottom:
-            return CGPoint(x: superview.bounds.size.width / 2.0, y: (superview.bounds.size.height - (toast.frame.size.height / 2.0)) - bottomPadding)
+            if #available(iOS 11.0, *) {
+                return CGPoint(x: superview.bounds.size.width / 2.0,
+                               y: view!.safeAreaLayoutGuide.layoutFrame.size.height - toast.frame.size.height)
+            } else {
+                return CGPoint(x: superview.bounds.size.width / 2.0, y: (superview.bounds.size.height - (toast.frame.size.height / 2.0)))
+            }
         }
     }
 }
-
+//superview.safeAreaLayoutGuide.layoutFrame.size.height
 // MARK: - Private UIView Extensions
 
 private extension UIView {
@@ -780,3 +785,4 @@ private extension UIView {
     }
     
 }
+
